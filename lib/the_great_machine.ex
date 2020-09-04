@@ -119,7 +119,7 @@ defmodule TheGreatMachine do
         player = state.players[player_id]
         case state.phase.perform(player, action, data, state.machine) do
             %Machine{} = machine ->
-                IO.puts state.phase
+                # IO.puts state.phase
                 case state.phase.check(machine) do
                     %Machine{} = machine ->
                         {:reply, {:ok, machine}, %{state | machine: machine}}
