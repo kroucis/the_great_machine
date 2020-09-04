@@ -33,6 +33,11 @@ type alias Player =
     }
 
 
+type alias PlayerCount =
+    { player_count : Int
+    }
+
+
 type alias Machine =
     { blue_button : MachineControl
     , red_button : MachineControl
@@ -52,6 +57,7 @@ type alias Machine =
 
 type alias Match =
     { id : ID
+    , player_count : Int
     , machine : Machine
     }
 

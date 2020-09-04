@@ -17,6 +17,18 @@ playerDecoder =
 
 
 
+--type alias PlayerCount =
+--     { player_count : Int
+--     }
+
+
+playerCountDecoder : Decoder PlayerCount
+playerCountDecoder =
+    map PlayerCount
+        (field "player_count" int)
+
+
+
 --type alias MachineControl =
 --    { count : Int
 --    , visible : Bool
@@ -61,6 +73,7 @@ machineDecoder =
 
 matchDecoder : Decoder Match
 matchDecoder =
-    map2 Match
+    map3 Match
         (field "id" int)
+        (field "player_count" int)
         (field "machine" machineDecoder)

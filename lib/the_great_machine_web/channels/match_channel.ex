@@ -4,7 +4,7 @@ defmodule TheGreatMachineWeb.MatchChannel do
   def join("match:" <> match_id_str, _payload, socket) do
     {match_id, ""} = Integer.parse(match_id_str)
     case TheGreatMachine.Matchmaker.get_match_instance(match_id) do
-      {:ok, match_pid} ->
+      {:ok, _match_pid} ->
         {:ok, assign(socket, :match_id, match_id)}
       _ ->
         case TheGreatMachine.Matchmaker.start_match(match_id) do
@@ -22,6 +22,7 @@ defmodule TheGreatMachineWeb.MatchChannel do
       {:ok, match_pid} ->
         {:ok, player_id} = TheGreatMachine.add_player(match_pid, %{socket: socket})
         {:ok, match_state} = TheGreatMachine.get_match(match_pid)
+        send "sync.player_count", %{player_count: match_state.player_count}, socket
         ok %{match: match_state, player: %{id: player_id}}, assign(socket, :player_id, player_id)
       _ ->
         error "No match with id #{match_id}", socket
@@ -48,12 +49,13 @@ defmodule TheGreatMachineWeb.MatchChannel do
     end
   end
 
-  def terminate(reason, socket) do
+  def terminate(_reason, socket) do
     match_id = socket.assigns[:match_id]
     player_id = socket.assigns[:player_id]
     case TheGreatMachine.Matchmaker.get_match_instance(match_id) do
       {:ok, match_pid} ->
-        :ok = TheGreatMachine.remove_player(match_pid, player_id)
+        {:ok, players} = TheGreatMachine.remove_player(match_pid, player_id)
+        send "sync.player_count", %{player_count: Enum.count(players)}, socket
       _ ->
         nil
     end

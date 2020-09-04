@@ -39,11 +39,12 @@ app.ports.beginWork.subscribe(function() {
     .receive("ok", resp => {
         matchChannel.push("join", {})
             .receive("ok", response => {
-                console.log(response.data)
                 app.ports.onMatchReady.send(response.data)
                 matchChannel.on("sync.machine", response => {
-                    console.log(response.data)
                     app.ports.onGameEvent.send({ event: "sync.machine", payload: response.data })
+                })
+                matchChannel.on("sync.player_count", response => {
+                    app.ports.onGameEvent.send({ event: "sync.player_count", payload: response.data })
                 })
                 app.ports.sendGameEvent.subscribe(function(event) {
                     matchChannel.push(event.event, event.payload)

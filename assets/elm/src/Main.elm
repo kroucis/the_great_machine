@@ -148,6 +148,19 @@ playing msg model match player uiState =
                         Err err ->
                             ( model, Json.Decode.errorToString err |> consoleLog )
 
+                ( "sync.player_count", Just playerCountJsonValue ) ->
+                    case decodeValue Decoders.playerCountDecoder playerCountJsonValue of
+                        Ok playerCount ->
+                            ( MatchPlaying
+                                { match | player_count = playerCount.player_count }
+                                player
+                                uiState
+                            , Cmd.none
+                            )
+
+                        Err err ->
+                            ( model, Json.Decode.errorToString err |> consoleLog )
+
                 ( "sys.disconnected", Nothing ) ->
                     ( Intro, Cmd.none )
 

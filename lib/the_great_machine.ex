@@ -64,8 +64,8 @@ defmodule TheGreatMachine do
     end
 
     defmodule Match do
-        @derive {Jason.Encoder, only: [:id, :machine]}
-        defstruct id: 0, players: %{}, next_player_id: 0, machine: %Machine{}, phase: TheGreatMachine.Phase0
+        @derive {Jason.Encoder, only: [:id, :player_count, :machine]}
+        defstruct id: 0, player_count: 0, players: %{}, next_player_id: 0, machine: %Machine{}, phase: TheGreatMachine.Phase0
     end
 
     def create_match(match_id) when is_number(match_id) do
@@ -107,12 +107,12 @@ defmodule TheGreatMachine do
     def handle_call({:add_player, player_data}, _from, state) do
         player_id = state.next_player_id
         new_players = Map.put(state.players, player_id, create_player(player_id, player_data))
-        {:reply, {:ok, player_id}, %{state | players: new_players, next_player_id: state.next_player_id + 1}}
+        {:reply, {:ok, player_id}, %{state | player_count: Enum.count(new_players), players: new_players, next_player_id: state.next_player_id + 1}}
     end
 
     def handle_call({:remove_player, player_id}, _from, state) do
         new_players = Map.delete(state.players, player_id)
-        {:reply, :ok, %{state | players: new_players}}
+        {:reply, {:ok, new_players}, %{state | player_count: Enum.count(new_players), players: new_players}}
     end
 
     def handle_call({:perform, player_id, action, data}, _from, state) do
@@ -179,7 +179,7 @@ defmodule TheGreatMachine.Phase0 do
     end
 
     def check(%Machine{} = machine) do
-        if ControlState.check machine.blue_button, 5 do
+        if ControlState.check machine.blue_button, 10 do
             machine = %{ machine | red_button: ControlState.make_visible machine.red_button }
             { machine, TheGreatMachine.Phase1 }
         else
@@ -198,7 +198,7 @@ defmodule TheGreatMachine.Phase1 do
 
     defdelegate perform(player, action, data, machine), to: TheGreatMachine.Phase0
 
-    def check(%Machine{blue_button: %ControlState{count: blue_count}, red_button: %ControlState{count: red_count}} = machine) when blue_count >= 10 and red_count >= 8 do
+    def check(%Machine{blue_button: %ControlState{count: blue_count}, red_button: %ControlState{count: red_count}} = machine) when blue_count >= 16 and red_count >= 8 do
         machine = %{ machine | green_button: ControlState.make_visible machine.green_button }
         { machine, TheGreatMachine.Phase2 }
     end
@@ -214,7 +214,10 @@ defmodule TheGreatMachine.Phase2 do
 
     def perform(%Player{} = _, "green_button", nil,  %Machine{} = machine) do
         red_cost = 4 * (:math.pow(2, machine.green_button.count) |> round)
-        if machine.red_button.count >= red_cost do
+        blue_cost = red_cost * 2
+        if machine.blue_button.count >= blue_cost
+        and machine.red_button.count >= red_cost do
+            machine = %{ machine | blue_button: ControlState.set(machine.blue_button, machine.blue_button.count - blue_cost) }
             machine = %{ machine | red_button: ControlState.set(machine.red_button, machine.red_button.count - red_cost) }
             machine = %{ machine | green_button: ControlState.increment machine.green_button }
             machine

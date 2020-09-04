@@ -4,7 +4,7 @@ defmodule TheGreatMachineWeb.UserSocket do
   ## Channels
   # channel "room:*", TheGreatMachineWeb.RoomChannel
 
-  channel "lobby:lobby", TheGreatMachineWeb.LobbyChannel
+  # channel "lobby:lobby", TheGreatMachineWeb.LobbyChannel
   channel "match:*", TheGreatMachineWeb.MatchChannel
 
   # Socket params are passed from the client and can
@@ -32,6 +32,6 @@ defmodule TheGreatMachineWeb.UserSocket do
   #     TheGreatMachineWeb.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
-  def id(socket), do: nil
+  def id(_socket), do: nil
 
 end

@@ -1,14 +1,14 @@
 defmodule TheGreatMachineWeb.LobbyChannel do
   use TheGreatMachineWeb, :channel
 
-  def join("lobby:lobby", payload, socket) do
-    {:ok, socket}
-  end
+  # def join("lobby:lobby", payload, socket) do
+  #   {:ok, socket}
+  # end
 
-  def match_state(match) do
-    %{ id: match.id
-     }
-  end
+  # def match_state(match) do
+  #   %{ id: match.id
+  #    }
+  # end
 
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client

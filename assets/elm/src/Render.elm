@@ -73,18 +73,25 @@ redButton rB =
         [ text <| String.fromInt rB.count ]
 
 
-greenButton : MachineControl -> MachineControl -> Html Msg
-greenButton gB rB =
+greenButton : MachineControl -> MachineControl -> MachineControl -> Html Msg
+greenButton gB bB rB =
     case gB.visible of
         False ->
             div [] []
 
         True ->
+            let
+                redCost =
+                    4 * (2 ^ gB.count)
+
+                blueCost =
+                    redCost * 2
+            in
             Button.button
                 [ Button.success
                 , Button.large
                 , Button.block
-                , Button.disabled ((4 * (2 ^ gB.count)) > rB.count)
+                , Button.disabled ((redCost > rB.count) || (blueCost > bB.count))
                 , Button.attrs [ onClick <| perform "green_button" ]
                 ]
                 [ text <| String.fromInt gB.count ]
@@ -638,13 +645,24 @@ matchPlaying match player uiState =
     Grid.container []
         [ Grid.row []
             [ Grid.col []
+                [ h3
+                    [ style "text-align" "center" ]
+                    [ text <| String.fromInt match.player_count ]
+                ]
+            ]
+        , Grid.row []
+            [ Grid.col []
                 [ blueButton m.blue_button ]
             , Grid.col []
                 [ redButton m.red_button ]
             ]
         , Grid.row []
             [ Grid.col []
-                [ greenButton m.green_button m.red_button ]
+                [ greenButton
+                    m.green_button
+                    m.blue_button
+                    m.red_button
+                ]
             ]
         , Grid.row []
             --[ Grid.col []
