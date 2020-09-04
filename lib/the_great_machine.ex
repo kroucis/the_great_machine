@@ -146,7 +146,7 @@ defmodule TheGreatMachine.Phase do
             alias TheGreatMachine.Machine
             alias TheGreatMachine.Player
 
-            @blue_cost ((:math.pow(2, unquote(step)) |> round) * 60) |> round
+            @blue_cost ((:math.pow(2, unquote(step)) |> round) * 80) |> round
             @red_cost (@blue_cost / 4 |> round)
 
             IO.inspect @blue_cost
