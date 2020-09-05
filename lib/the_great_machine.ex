@@ -146,7 +146,7 @@ defmodule TheGreatMachine.Phase do
             alias TheGreatMachine.Machine
             alias TheGreatMachine.Player
 
-            @blue_cost ((:math.pow(2, unquote(step)) |> round) * 80) |> round
+            @blue_cost ((:math.pow(2, unquote(step)) |> round) * 100) |> round
             @red_cost (@blue_cost / 4 |> round)
 
             IO.inspect @blue_cost
@@ -324,9 +324,9 @@ defmodule TheGreatMachine.Phase4 do
         %{ machine | blue_button: new_blue, button_array: new_button_array }
     end
 
-    def perform(%Player{} = _, "engage", nil, %Machine{button_array: %ControlState{count: button_array_count}} = machine) when button_array_count >= 15 do
-        engage_cost = 5 + :rand.uniform(10)
-        blue_generated = round(engage_cost * 1.5) * 15
+    def perform(%Player{} = _, "engage", nil, %Machine{button_array: %ControlState{count: button_array_count}} = machine) when button_array_count >= 10 do
+        engage_cost = 5 + :rand.uniform(5)
+        blue_generated = (engage_cost * green_count) |> round
         new_button_array = %{ machine.button_array | count: machine.button_array.count - engage_cost }
         new_blue = %{machine.blue_button | count: machine.blue_button.count + blue_generated}
         %{ machine | blue_button: new_blue, button_array: new_button_array }
@@ -430,12 +430,12 @@ defmodule TheGreatMachine.Phase8 do
         %{ machine | guess: %{ machine.button_array | state: -1 } }
     end
 
-    def perform(%Player{} = _, "guess", %{"value" => value}, %Machine{blue_button: %ControlState{count: blue_count}} = machine) when blue_count > 0 do
+    def perform(%Player{} = _, "guess", %{"value" => value}, %Machine{blue_button: %ControlState{count: blue_count}, green_button: %ControlState{count: green_count}} = machine) when blue_count > 0 do
         num = :math.pow(2, value - 1) |> round
         blue_cost = 1
         cond do
             value == machine.guess.state ->
-                blue_generated = machine.guess.state * 5
+                blue_generated = machine.guess.state * green_count
                 machine = %{ machine | blue_button: ControlState.set(machine.blue_button, machine.blue_button.count + (blue_generated - blue_cost)) }
                 machine = %{ machine | guess: %{ machine.guess | state: :rand.uniform(8) + 1, count: 0 } }
                 machine
