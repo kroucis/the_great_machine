@@ -324,7 +324,7 @@ defmodule TheGreatMachine.Phase4 do
         %{ machine | blue_button: new_blue, button_array: new_button_array }
     end
 
-    def perform(%Player{} = _, "engage", nil, %Machine{button_array: %ControlState{count: button_array_count}} = machine) when button_array_count >= 10 do
+    def perform(%Player{} = _, "engage", nil, %Machine{green_button: %ControlState{count: green_count}, button_array: %ControlState{count: button_array_count}} = machine) when button_array_count >= 10 do
         engage_cost = 5 + :rand.uniform(5)
         blue_generated = (engage_cost * green_count) |> round
         new_button_array = %{ machine.button_array | count: machine.button_array.count - engage_cost }
