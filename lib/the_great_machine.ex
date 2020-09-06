@@ -499,9 +499,12 @@ defmodule TheGreatMachine.Phase10 do
                 |> max(0)
                 |> min(9_999)
         if value == machine.dial_pad.state do
-            blue_generated = 200
+            blue_generated = :math.pow(2, machine.green_button.count) * 10
+            red_generated = :math.pow(2, machine.green_button.count)
             machine = %{ machine | blue_button: ControlState.set(machine.blue_button, machine.blue_button.count + blue_generated) }
-            machine = %{ machine | dial_pad: %{ machine.dial_pad | state: :rand.uniform(9_999) } }
+            machine = %{ machine | red_button: ControlState.set(machine.red_button, machine.red_button.count + red_generated) }
+            new_state = :rand.uniform(9_999)
+            machine = %{ machine | dial_pad: %{ machine.dial_pad | count: new_state, state: new_state } }
             machine
         else
             %{ machine | dial_pad: %{ machine.dial_pad | count: value } }

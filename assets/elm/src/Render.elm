@@ -340,7 +340,7 @@ engageDriveButton bA =
         True ->
             Button.button
                 [ Button.secondary
-                , Button.disabled (bA.count < 15)
+                , Button.disabled (bA.count < 10)
                 , Button.attrs
                     [ onClick <| perform "engage" ]
                 ]
@@ -449,7 +449,12 @@ dialPadButton uiState dsbld str =
         , Button.small
         , Button.block
         , Button.attrs
-            [ onClick <| UpdateUIStateMsg { uiState | dialPad = uiState.dialPad ++ str |> String.left 4 }
+            [ onClick <|
+                UpdateUIStateMsg
+                    { uiState
+                        | dialPad = uiState.dialPad ++ str |> String.left 4
+                        , dialPadMessage = ""
+                    }
             , disabled dsbld
             ]
         ]
@@ -474,7 +479,7 @@ dialPad uiState dsbld dP =
                     [ Button.secondary
                     , Button.small
                     , Button.attrs
-                        [ onClick <| UpdateUIStateMsg { uiState | dialPad = "" }
+                        [ onClick <| UpdateUIStateMsg { uiState | dialPad = "", dialPadMessage = "" }
                         , disabled dsbld
                         ]
                     ]
