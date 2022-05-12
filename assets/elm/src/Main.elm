@@ -204,7 +204,7 @@ view model =
 -- Main Function
 
 
-main : Program Value Model Msg
+main : Program () Model Msg
 main =
     Browser.element
         { init = init

@@ -11,13 +11,23 @@ use Mix.Config
 config :the_great_machine, TheGreatMachineWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "KgU9BLQNpcbofaGOa5T9KKHhOE8ap9i+8qJ9MTS8duvJckGJlbbJB6uQl+A+TSZ6",
-  render_errors: [view: TheGreatMachineWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: TheGreatMachine.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: FspOrgAccountWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: TheGreatMachine.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.14.0",
+  default: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

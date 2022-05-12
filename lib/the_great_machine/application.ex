@@ -10,9 +10,8 @@ defmodule TheGreatMachine.Application do
     children = [
       # Start the endpoint when the application starts
       TheGreatMachineWeb.Endpoint,
-      # Starts a worker by calling: TheGreatMachine.Worker.start_link(arg)
-      # {TheGreatMachine.Worker, arg},
-      TheGreatMachine.Matchmaker
+      TheGreatMachine.Matchmaker,
+      {Phoenix.PubSub, [name: TheGreatMachine.PubSub, adapter: Phoenix.PubSub.PG2]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
